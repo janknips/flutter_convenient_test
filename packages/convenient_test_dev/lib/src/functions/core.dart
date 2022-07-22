@@ -141,19 +141,17 @@ void _configureGoldens(
 
 Future<void> _lastTearDownAll() async {
   // const _kTag = 'LastTearDownAll';
-  if (kIsWeb) {
-    return;
+  if (!kIsWeb) {
+    // need to `await` to ensure it is sent
+    await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
+      tearDownAll: TearDownAll(
+        resolvedExecutionFilter: myGetIt
+            .get<ConvenientTestExecutor>()
+            .resolvedExecutionFilter
+            .toProto(),
+      ),
+    ));
   }
-
-  // need to `await` to ensure it is sent
-  await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
-        tearDownAll: TearDownAll(
-          resolvedExecutionFilter: myGetIt
-              .get<ConvenientTestExecutor>()
-              .resolvedExecutionFilter
-              .toProto(),
-        ),
-      ));
 
   // TODO
   // if (CompileTimeConfig.kCIMode) {

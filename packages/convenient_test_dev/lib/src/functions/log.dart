@@ -7,6 +7,7 @@ import 'package:convenient_test_dev/src/support/get_it.dart';
 import 'package:convenient_test_dev/src/support/manager_rpc_service.dart';
 import 'package:convenient_test_dev/src/utils/snapshot.dart';
 import 'package:fixnum/fixnum.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:test_api/src/backend/group.dart';
@@ -14,10 +15,12 @@ import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/live_test.dart';
 
 extension ConvenientTestLog on ConvenientTest {
-  void section(String description) => log('SECTION', description, type: LogSubEntryType.SECTION);
+  void section(String description) =>
+      log('SECTION', description, type: LogSubEntryType.SECTION);
 
   // p.s. can search emoji here - https://emojipedia.org
-  LogHandle log(String title, String message, {LogSubEntryType? type}) => convenientTestLog(title, message, type: type);
+  LogHandle log(String title, String message, {LogSubEntryType? type}) =>
+      convenientTestLog(title, message, type: type);
 }
 
 LogHandle convenientTestLog(
@@ -81,35 +84,41 @@ class LogHandle {
     bool printing = false,
   }) async {
     if (printing) {
-      Log.i(_kTag, '${_typeToLeading(type)} $title $message $error $stackTrace');
+      Log.i(
+          _kTag, '${_typeToLeading(type)} $title $message $error $stackTrace');
     }
 
-    await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
-            logEntry: LogEntry(
-          id: _id.toInt64(),
-          testName: _testName,
-          subEntries: [
-            LogSubEntry(
-              id: IdGenerator.instance.nextId().toInt64(),
-              type: type,
-              time: Int64(DateTime.now().microsecondsSinceEpoch),
-              title: title,
-              message: message,
-              error: error,
-              stackTrace: stackTrace,
-            ),
-          ],
-        )));
+    if (!kIsWeb) {
+      await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
+              logEntry: LogEntry(
+            id: _id.toInt64(),
+            testName: _testName,
+            subEntries: [
+              LogSubEntry(
+                id: IdGenerator.instance.nextId().toInt64(),
+                type: type,
+                time: Int64(DateTime.now().microsecondsSinceEpoch),
+                title: title,
+                message: message,
+                error: error,
+                stackTrace: stackTrace,
+              ),
+            ],
+          )));
+    }
   }
 
   Future<void> snapshot({String name = 'default', List<int>? image}) async {
-    image ??= await takeSnapshot(pumper: ConvenientTest.maybeActiveInstance?.tester.pump);
-    await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
-            snapshot: Snapshot(
-          logEntryId: _id.toInt64(),
-          name: name,
-          image: image,
-        )));
+    image ??= await takeSnapshot(
+        pumper: ConvenientTest.maybeActiveInstance?.tester.pump);
+    if (!kIsWeb) {
+      await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
+              snapshot: Snapshot(
+            logEntryId: _id.toInt64(),
+            name: name,
+            image: image,
+          )));
+    }
   }
 }
 
