@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:convenient_test_common/convenient_test_common.dart';
 import 'package:convenient_test_dev/src/functions/core.dart';
 import 'package:convenient_test_dev/src/functions/descriptor.dart';
-import 'package:convenient_test_dev/src/functions/goldens.dart';
 import 'package:convenient_test_dev/src/functions/interaction.dart';
 import 'package:convenient_test_dev/src/functions/log.dart';
 import 'package:flutter/material.dart';
@@ -115,8 +114,6 @@ Future<void> _expectWithRetry(
           printing: true,
         );
         await logSnapshot(name: 'failed');
-
-        await EnhancedLocalFileComparator.instance.lastFailure?.dumpToLogSnapshot(logSnapshot);
 
         rethrow;
       }

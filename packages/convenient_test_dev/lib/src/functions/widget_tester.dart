@@ -1,13 +1,9 @@
-import 'dart:io';
-import 'dart:ui' as ui;
-
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_test/src/_matchers_io.dart'; // ignore: implementation_imports
-import 'package:path/path.dart' as p;
 
-typedef EnterTextWithoutReplaceLogCallback = void Function(TextEditingValue oldValue, TextEditingValue newValue);
+typedef EnterTextWithoutReplaceLogCallback = void Function(
+    TextEditingValue oldValue, TextEditingValue newValue);
 
 extension ExtWidgetTester on WidgetTester {
   Future<void> enterTextWithoutReplace(Finder finder, String text,
@@ -22,7 +18,8 @@ extension ExtWidgetTester on WidgetTester {
 
         final oldValue = textFieldInfo.extractTextEditingValue(textField);
         if (oldValue == null) {
-          throw Exception('To use `enterTextWithoutReplace`, please ensure your TextField has non-null controller');
+          throw Exception(
+              'To use `enterTextWithoutReplace`, please ensure your TextField has non-null controller');
         }
 
         final newValue = _enterTextWithoutReplaceActOnValue(oldValue, text);
@@ -70,23 +67,20 @@ extension ExtWidgetTester on WidgetTester {
   }
 
   // useful for widget tests (not for integration tests)
-  Future<void> debugWidgetTestSaveScreenshot([Finder? finder, String stem = 'debug_screenshot']) async {
-    await runAsync(() async {
-      final image = await captureImage(element(finder ?? find.byType(MaterialApp)));
-      final bytes = (await image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
-      final path = p.join((goldenFileComparator as LocalFileComparator).basedir.path, '$stem.png');
-      debugPrint(
-          'debugWidgetTestSaveScreenshot save to path=$path image.size=${image.width}x${image.height} byte.length=${bytes.length}');
-      File(path).writeAsBytesSync(bytes);
-    });
+  Future<void> debugWidgetTestSaveScreenshot(
+      [Finder? finder, String stem = 'debug_screenshot']) async {
+    throw Exception(
+        'unsupported / to do, had to remove since web does not have this');
   }
 }
 
-const kDefaultConvenientTestGeneralizedTextFieldInfos = <GeneralizedTextFieldInfo>[TextFieldInfo()];
+const kDefaultConvenientTestGeneralizedTextFieldInfos =
+    <GeneralizedTextFieldInfo>[TextFieldInfo()];
 
 // users can customize this, for example, if they have a custom MyTextField which is similar to TextField
 // ignore: avoid-global-state
-var convenientTestGeneralizedTextFieldInfos = kDefaultConvenientTestGeneralizedTextFieldInfos;
+var convenientTestGeneralizedTextFieldInfos =
+    kDefaultConvenientTestGeneralizedTextFieldInfos;
 
 abstract class GeneralizedTextFieldInfo<T extends Widget> {
   const GeneralizedTextFieldInfo();
@@ -94,26 +88,30 @@ abstract class GeneralizedTextFieldInfo<T extends Widget> {
   Type get widgetType => T;
 
   T? findWidget(WidgetTester tester, Finder finder) => tester
-      .widgetList<T>(find.descendant(of: finder, matching: find.byType(widgetType), matchRoot: true))
+      .widgetList<T>(find.descendant(
+          of: finder, matching: find.byType(widgetType), matchRoot: true))
       .singleOrNull;
 
   TextEditingValue? extractTextEditingValue(T widget);
 
-  Future<void> showKeyboard(WidgetTester tester, Finder finder) => tester.showKeyboard(finder);
+  Future<void> showKeyboard(WidgetTester tester, Finder finder) =>
+      tester.showKeyboard(finder);
 }
 
 class TextFieldInfo extends GeneralizedTextFieldInfo<TextField> {
   const TextFieldInfo();
 
   @override
-  TextEditingValue? extractTextEditingValue(TextField widget) => widget.controller?.value;
+  TextEditingValue? extractTextEditingValue(TextField widget) =>
+      widget.controller?.value;
 
   @override
   String toString() => 'TextFieldInfo{}';
 }
 
 // TODO ok?
-TextEditingValue _enterTextWithoutReplaceActOnValue(TextEditingValue oldValue, String text) {
+TextEditingValue _enterTextWithoutReplaceActOnValue(
+    TextEditingValue oldValue, String text) {
   if (!oldValue.selection.isValid) {
     final newText = oldValue.text + text;
     return TextEditingValue(

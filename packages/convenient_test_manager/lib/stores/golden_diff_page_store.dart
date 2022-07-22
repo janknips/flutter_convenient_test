@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convenient_test_common/convenient_test_common.dart';
-import 'package:convenient_test_dev/convenient_test_dev.dart';
 import 'package:convenient_test_manager/misc/git_extensions.dart';
 import 'package:convenient_test_manager_dart/stores/global_config_store.dart';
 import 'package:flutter/material.dart';
@@ -51,16 +50,20 @@ abstract class _GoldenDiffPageStore with Store {
     final diffFilePaths = await git.getDiff();
 
     Log.d(_kTag, 'calcGitFolderInfo step get file content');
-    final diffFileInfos = await Stream.fromIterable(diffFilePaths).asyncMap((path) async {
-      final originalContent = Uint8List.fromList(await git.show(ref: 'HEAD', filePath: path));
+    final diffFileInfos =
+        await Stream.fromIterable(diffFilePaths).asyncMap((path) async {
+      final originalContent =
+          Uint8List.fromList(await git.show(ref: 'HEAD', filePath: path));
       final newContent = await File(p.join(gitRepo, path)).readAsBytes();
-      final comparisonResult = await EnhancedLocalFileComparator.myCompareLists(originalContent, newContent);
 
       return GitDiffFileInfo(
         path: path,
         originalContent: originalContent,
         newContent: newContent,
-        comparisonResult: comparisonResult,
+        comparisonResult: ComparisonResult(
+          passed: true,
+          diffPercent: 0,
+        ),
       );
     }).toList();
 
