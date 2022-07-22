@@ -190,5 +190,6 @@ void tTestWidgets(
       debugDefaultTargetPlatformOverride = null;
     }),
     skip: skip,
+    semanticsEnabled: !kIsWeb,
   );
 }
