@@ -139,6 +139,9 @@ void _configureGoldens(
 
 Future<void> _lastTearDownAll() async {
   // const _kTag = 'LastTearDownAll';
+  if (kIsWeb) {
+    return;
+  }
 
   // need to `await` to ensure it is sent
   await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
