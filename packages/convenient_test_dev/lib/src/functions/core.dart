@@ -108,9 +108,11 @@ Future<void> _runModeIntegrationTest(
           rethrow;
         }
 
-        unawaited(myGetIt
-            .get<ConvenientTestManagerClient>()
-            .reportSingle(ReportItem(setUpAll: SetUpAll())));
+        if (!kIsWeb) {
+          unawaited(myGetIt
+              .get<ConvenientTestManagerClient>()
+              .reportSingle(ReportItem(setUpAll: SetUpAll())));
+        }
 
         setup();
 
