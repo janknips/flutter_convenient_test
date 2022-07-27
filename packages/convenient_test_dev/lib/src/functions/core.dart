@@ -15,6 +15,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 
+// ignore: deprecated_member_use
+import 'package:test_api/test_api.dart' as test_package;
+
 class ConvenientTest {
   final WidgetTester tester;
 
@@ -144,13 +147,13 @@ Future<void> _lastTearDownAll() async {
   if (!kIsWeb) {
     // need to `await` to ensure it is sent
     await myGetIt.get<ConvenientTestManagerClient>().reportSingle(ReportItem(
-      tearDownAll: TearDownAll(
-        resolvedExecutionFilter: myGetIt
-            .get<ConvenientTestExecutor>()
-            .resolvedExecutionFilter
-            .toProto(),
-      ),
-    ));
+          tearDownAll: TearDownAll(
+            resolvedExecutionFilter: myGetIt
+                .get<ConvenientTestExecutor>()
+                .resolvedExecutionFilter
+                .toProto(),
+          ),
+        ));
   }
 
   // TODO
@@ -171,6 +174,7 @@ void tTestWidgets(
   String description,
   TWidgetTesterCallback callback, {
   bool skip = false,
+  test_package.Timeout? timeout,
 }) {
   testWidgets(
     description,
@@ -191,5 +195,6 @@ void tTestWidgets(
     }),
     skip: skip,
     semanticsEnabled: !kIsWeb,
+    timeout: timeout ?? const Timeout(Duration(seconds: 60)),
   );
 }
